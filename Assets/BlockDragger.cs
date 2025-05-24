@@ -3,15 +3,15 @@ using UnityEngine.InputSystem;
 
 public class BlockDragger : MonoBehaviour
 {
-    [SerializeField] private float hoverHeight = 4f; // how high above the surface to hover.
-    [SerializeField] private float raycastHeight = 5f; // how high above the block to start raycasting.
-    
-    
+    [SerializeField] private float hoverHeight = 4f;
+    [SerializeField] private float raycastHeight = 5f;
+    [SerializeField] private float liftSpeed = 10f;
+
     private Camera _cam;
     private GameObject _selectedBlock;
-    private Vector3 _offset;
-    private float _zCoord;
-
+    private Vector3 _localGrabOffset;
+    private float _targetY;
+    private bool _isLifting;
     private InputSystem_Actions _input;
 
     private void OnEnable()
@@ -21,40 +21,49 @@ public class BlockDragger : MonoBehaviour
 
         _input.Player.Click.started += ctx => TryPickBlock();
         _input.Player.Click.canceled += ctx => DropBlock();
-        
-        _input.Enable();  
-        
-        
-        print("Hover height: " + hoverHeight);
-    } 
+
+        _input.Enable();
+    }
+
     private void OnDisable() => _input.Disable();
 
-    // Update is called once per frame
     private void Update()
     {
-        if (_selectedBlock != null)
+        if (_selectedBlock == null) return;
+
+        Vector2 mouseScreenPos = _input.Player.PointerPosition.ReadValue<Vector2>();
+        Ray screenRay = _cam.ScreenPointToRay(mouseScreenPos);
+
+        Vector3 currentGrabPoint = _selectedBlock.transform.TransformPoint(_localGrabOffset);
+        Plane dragPlane = new Plane(Vector3.up, new Vector3(0, currentGrabPoint.y, 0));
+
+        if (!dragPlane.Raycast(screenRay, out float enter)) return;
+
+        Vector3 desiredMouseWorld = screenRay.GetPoint(enter);
+
+        // Raycast from the block's current position downward to determine hover height
+        Vector3 rayOrigin = new Vector3(_selectedBlock.transform.position.x, raycastHeight, _selectedBlock.transform.position.z);
+
+        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, raycastHeight * 2f))
         {
-            var screenRay = _cam.ScreenPointToRay(_input.Player.PointerPosition.ReadValue<Vector2>());
-            var groundPlane = new Plane(Vector3.up, Vector3.zero);
+            float groundY = hit.point.y;
+            _targetY = groundY + hoverHeight;
 
-            if (groundPlane.Raycast(screenRay, out var enter))
+            Vector3 worldTargetGrabPoint = new Vector3(desiredMouseWorld.x, _targetY, desiredMouseWorld.z);
+            Vector3 currentGrabWorld = _selectedBlock.transform.TransformPoint(_localGrabOffset);
+            Vector3 delta = worldTargetGrabPoint - currentGrabWorld;
+
+            if (_isLifting)
             {
-                var targetXZ = screenRay.GetPoint(enter);
-                var rayOrigin = new Vector3(targetXZ.x, raycastHeight, targetXZ.z);
-
-                var ray = new Ray(rayOrigin, Vector3.down);
-                var hits = Physics.RaycastAll(ray);
-
-                foreach (var hit in hits)
-                {
-                    if (hit.collider.gameObject == _selectedBlock) continue;
-                    var hoverPos = new Vector3(targetXZ.x, hit.point.y + hoverHeight, targetXZ.z);
-                    print("Hover pos: " + hoverPos);
-                    _selectedBlock.transform.position = hoverPos + _offset;
-                    break;
-                } 
+                float step = liftSpeed * Time.deltaTime;
+                if (Mathf.Abs(currentGrabWorld.y - _targetY) < 0.01f)
+                    _isLifting = false;
+                else
+                    delta.y = Mathf.Sign(delta.y) * Mathf.Min(Mathf.Abs(delta.y), step);
             }
-        } 
+
+            _selectedBlock.transform.position += delta;
+        }
     }
 
     private void TryPickBlock()
@@ -62,18 +71,12 @@ public class BlockDragger : MonoBehaviour
         var ray = _cam.ScreenPointToRay(_input.Player.PointerPosition.ReadValue<Vector2>());
         if (Physics.Raycast(ray, out RaycastHit hit) && hit.collider.CompareTag("Block"))
         {
-            print(hit.collider.name);
             _selectedBlock = hit.collider.gameObject;
-            
-            var groundPlane = new Plane(Vector3.up, Vector3.zero);
-            if (groundPlane.Raycast(ray, out var enter))
-            {
-                var hitPoint = ray.GetPoint(enter);
-                _offset = _selectedBlock.transform.position - hitPoint;
-                print("Calculated offset: " + _offset);
-            }
-            
+            _localGrabOffset = _selectedBlock.transform.InverseTransformPoint(hit.point);
             _selectedBlock.GetComponent<Rigidbody>().isKinematic = true;
+            _isLifting = true;
+
+            Cursor.visible = false;
         }
         else
         {
@@ -87,6 +90,7 @@ public class BlockDragger : MonoBehaviour
         {
             _selectedBlock.GetComponent<Rigidbody>().isKinematic = false;
             _selectedBlock = null;
+            Cursor.visible = true;
         }
     }
 }
