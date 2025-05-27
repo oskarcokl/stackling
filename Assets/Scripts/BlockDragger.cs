@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -20,6 +21,7 @@ public class BlockDragger : MonoBehaviour
     private bool _isDragging;
     private InputSystem_Actions _input;
     private int _originalLayer;
+    private Tween _yTween;
 
     private void OnEnable()
     {
@@ -37,24 +39,6 @@ public class BlockDragger : MonoBehaviour
     private void Update()
     {
         if (_selectedBlock == null) return;
-
-        if (_isLifting)
-        {
-            Vector3 currentGrabWorld = _selectedBlock.transform.TransformPoint(_localGrabOffset);
-            float step = liftSpeed * Time.deltaTime;
-            float newY = Mathf.MoveTowards(currentGrabWorld.y, _targetY, step);
-
-            Vector3 newGrabWorld = new Vector3(_currentPosition.x, newY, _currentPosition.z);
-            Vector3 delta = newGrabWorld - currentGrabWorld;
-            _selectedBlock.transform.position += delta;
-            
-            cursorController.SetPosition(currentGrabWorld);
-
-            if (Mathf.Abs(newY - _targetY) < 0.01f)
-                _isLifting = false;
-
-            return;
-        }
 
         if (_isDragging)
         {
@@ -77,9 +61,18 @@ public class BlockDragger : MonoBehaviour
                 _targetY = hit.point.y + hoverHeight;
             }
             
+            var currentPosition = _selectedBlock.transform.position; 
+            Vector3 desiredPosition = new Vector3(_currentPosition.x, currentPosition.y, _currentPosition.z); // as not to interfeer with the tween.
             Vector3 currentGrabWorld = _selectedBlock.transform.TransformPoint(_localGrabOffset);
-            Vector3 desiredPosition = new Vector3(_currentPosition.x, _targetY, _currentPosition.z);
             Vector3 delta = desiredPosition - currentGrabWorld;
+            delta.y = 0; // let the delta y be handled by DOTween
+            
+            if (Mathf.Abs(currentPosition.y - _targetY) > 0.01f)
+            {
+                _yTween?.Kill();
+                _yTween = _selectedBlock.transform.DOMoveY(_targetY, 0.2f).SetEase(Ease.OutQuad);
+            }
+            
             cursorController.SetPosition(currentGrabWorld);
             
             _selectedBlock.transform.position += delta;
@@ -119,14 +112,29 @@ public class BlockDragger : MonoBehaviour
     {
         if (_selectedBlock != null)
         {
-            _selectedBlock.GetComponent<Rigidbody>().isKinematic = false;
-            _selectedBlock.layer = _originalLayer;
-            _selectedBlock = null;
+            _isDragging = false;
+            if (Physics.Raycast(_selectedBlock.transform.position, Vector3.down, out RaycastHit hit))
+            {
+                var col = _selectedBlock.GetComponent<Collider>();
+                var halfHeight = col.bounds.extents.y;
+                print("Target y: "+ hit.point.y);
+                _yTween?.Kill();
+                _yTween = _selectedBlock.transform.DOMoveY(hit.point.y + halfHeight + 0.01f, 0.4f).SetEase(Ease.InOutQuad).OnComplete(() =>
+                {
+                    _selectedBlock.GetComponent<Rigidbody>().isKinematic = false;
+                    _selectedBlock = null;
+                });
+            }
+            else
+            {
+                // If for some reason we dont have anything beneth us just use let the physics system handle it.
+                print("Else");
+                _selectedBlock.GetComponent<Rigidbody>().isKinematic = false;
+                _selectedBlock = null;
 
+            }
             cursorController.ReleaseBlock();
             placementIndicatorController.HideIndicator();
-
-            _isDragging = false;
         }
     }
 }
