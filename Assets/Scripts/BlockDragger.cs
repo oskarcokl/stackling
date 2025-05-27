@@ -97,6 +97,7 @@ public class BlockDragger : MonoBehaviour
             placementIndicatorController.ShowIndicator();
 
             _isDragging = true;
+            InputContext.Instance.StartDraggingBlock();
             _targetY = hoverHeight;
         }
         else
@@ -110,6 +111,7 @@ public class BlockDragger : MonoBehaviour
         if (_selectedBlock != null)
         {
             _isDragging = false;
+            InputContext.Instance.StopDraggingBlock();
             if (Physics.Raycast(_selectedBlock.transform.position, Vector3.down, out RaycastHit hit))
             {
                 var col = _selectedBlock.GetComponent<Collider>();
