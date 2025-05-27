@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 public class BlockDragger : MonoBehaviour
 {
     [SerializeField] private float hoverHeight = 4f;
-    [SerializeField] private float liftSpeed = 10f;
     [SerializeField] private float moveSpeed = 0.1f;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private CursorController cursorController;
@@ -17,7 +16,6 @@ public class BlockDragger : MonoBehaviour
     private Vector3 _initialPosition;
     private Vector3 _currentPosition;
     private float _targetY;
-    private bool _isLifting;
     private bool _isDragging;
     private InputSystem_Actions _input;
     private int _originalLayer;
@@ -98,7 +96,6 @@ public class BlockDragger : MonoBehaviour
             
             placementIndicatorController.ShowIndicator();
 
-            _isLifting = true;
             _isDragging = true;
             _targetY = hoverHeight;
         }
