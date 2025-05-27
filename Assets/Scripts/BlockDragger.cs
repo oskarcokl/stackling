@@ -46,20 +46,21 @@ public class BlockDragger : MonoBehaviour
 
             _currentPosition += (right * mouseDelta.x + forward * mouseDelta.y) * moveSpeed;
 
-            Vector3 rayOrigin = new Vector3(_currentPosition.x, 100f, _currentPosition.z);
-            
-            
-            var ray = new Ray(rayOrigin, Vector3.down);
-            var hits = Physics.RaycastAll(ray);
-
-            foreach (RaycastHit hit in hits)
-            {
-                if (hit.collider.gameObject == _selectedBlock) continue;
-                
-                _targetY = hit.point.y + hoverHeight;
-            }
+            var bounds = _selectedBlock.GetComponent<Renderer>().bounds;
+            var halfExtents = bounds.extents + Vector3.one * 0.5f; // add some padding
             
             var currentPosition = _selectedBlock.transform.position; 
+            var center = new Vector3(_currentPosition.x, currentPosition.y + bounds.extents.y, _currentPosition.z);
+
+            if (Physics.BoxCast(center, halfExtents, Vector3.down, out var hit, Quaternion.identity, 100f))
+            {
+                if (hit.collider.gameObject != _selectedBlock)
+                {
+                    _targetY = hit.point.y + hoverHeight; 
+                }
+            }
+                
+            
             Vector3 desiredPosition = new Vector3(_currentPosition.x, currentPosition.y, _currentPosition.z); // as not to interfeer with the tween.
             Vector3 currentGrabWorld = _selectedBlock.transform.TransformPoint(_localGrabOffset);
             Vector3 delta = desiredPosition - currentGrabWorld;
