@@ -149,3 +149,21 @@ This schedule assumes a relaxed pace suitable for a solo developer with limited 
 - Write cozy game description
 - Set up and publish itch.io page
 - Share link with others or communities for feedback
+
+## ✅ Progress Log
+
+### May 18, 2025
+- Created new Unity project named `Stackling` using 3D URP template
+- Initialized Git repository with appropriate `.gitignore`
+- Connected to GitHub and made first commit
+- Chose to manage version control using Git + GitHub (not Unity Cloud)
+- Verified project is clean and ready for next steps
+
+### May 28, 2025
+- Implemented mouse drag and object pickup system
+- Completed simple block placement system (gravity applies after placement)
+- Implemented basic object rotation *(in progress — needs refinement)*
+- Added placement preview *(ghost object — needs polish)*
+- Gravity on placement and collapse behavior completed
+- Orbit camera system added *(zoom works, smooth drag pending)*
+- Not yet started: block prefabs, physics material tuning, skybox, ambient lighting, reset button
