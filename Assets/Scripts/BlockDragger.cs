@@ -29,6 +29,9 @@ public class BlockDragger : MonoBehaviour
         _input.Player.Click.started += ctx => TryPickBlock();
         _input.Player.Click.canceled += ctx => DropBlock();
 
+        _input.Player.RotateLeft.performed += _ => RotateLeft();
+        _input.Player.RotateRight.performed += _ => RotateRight();
+
         _input.Enable();
     }
 
@@ -136,5 +139,18 @@ public class BlockDragger : MonoBehaviour
             cursorController.ReleaseBlock();
             placementIndicatorController.HideIndicator();
         }
+    }
+
+    private void RotateLeft()
+    {
+        if (!_isDragging && !_selectedBlock) return;
+        
+        _selectedBlock.transform.Rotate(0, 90, 0);
+    }
+
+    private void RotateRight()
+    {
+        if (!_isDragging && !_selectedBlock) return;
+        _selectedBlock.transform.Rotate(0, -90, 0);
     }
 }
