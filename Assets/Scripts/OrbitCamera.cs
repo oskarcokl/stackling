@@ -45,9 +45,10 @@ public class OrbitCamera : MonoBehaviour
     }
 
     // Update is called once per frame
+    /*
     void Update()
     {
-        if (Mouse.current.leftButton.isPressed && !InputContext.Instance.IsDragginBlock)
+        if (Mouse.current.leftButton.isPressed && !InputContext.Instance.IsDraggingBlock)
         {
             verticalAngle -= _lookInput.y * _rotationSpeed * Time.deltaTime;
             horizontalAngle += _lookInput.x * _rotationSpeed * Time.deltaTime;
@@ -70,4 +71,5 @@ public class OrbitCamera : MonoBehaviour
         // Is this needed?
         _zoomInput = 0f;
     }
+*/
 }

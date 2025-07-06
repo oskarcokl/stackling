@@ -4,7 +4,7 @@ public class InputContext : MonoBehaviour
 {
     public static InputContext Instance { get; private set; } 
     
-    public bool IsDragginBlock { get; private set; }
+    public bool IsDraggingBlock { get; private set; }
 
 
     private void Awake()
@@ -13,6 +13,6 @@ public class InputContext : MonoBehaviour
         else Instance = this;
     }
     
-    public void StartDraggingBlock() => IsDragginBlock = true;
-    public void StopDraggingBlock() => IsDragginBlock = false;
+    public void StartDraggingBlock() => IsDraggingBlock = true;
+    public void StopDraggingBlock() => IsDraggingBlock = false;
 }

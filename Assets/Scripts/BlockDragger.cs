@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,11 +27,11 @@ public class BlockDragger : MonoBehaviour
         _cam = Camera.main;
         _input = new InputSystem_Actions();
 
-        _input.Player.Click.started += ctx => TryPickBlock();
-        _input.Player.Click.canceled += ctx => DropBlock();
+        _input.PlayerInput.Click.started += ctx => TryPickBlock();
+        _input.PlayerInput.Click.canceled += ctx => DropBlock();
 
-        _input.Player.RotateLeft.performed += _ => RotateLeft();
-        _input.Player.RotateRight.performed += _ => RotateRight();
+        _input.PlayerInput.RotateLeft.performed += _ => RotateLeft();
+        _input.PlayerInput.RotateRight.performed += _ => RotateRight();
 
         _input.Enable();
     }
@@ -85,7 +86,7 @@ public class BlockDragger : MonoBehaviour
 
     private void TryPickBlock()
     {
-        var ray = _cam.ScreenPointToRay(_input.Player.PointerPosition.ReadValue<Vector2>());
+        var ray = _cam.ScreenPointToRay(_input.PlayerInput.PointerPosition.ReadValue<Vector2>());
         if (Physics.Raycast(ray, out RaycastHit hit) && hit.collider.CompareTag("Block"))
         {
             _selectedBlock = hit.collider.gameObject;
@@ -143,14 +144,48 @@ public class BlockDragger : MonoBehaviour
 
     private void RotateLeft()
     {
-        if (!_isDragging && !_selectedBlock) return;
-        
-        _selectedBlock.transform.Rotate(0, 90, 0);
+        RotateBlockAnimated(Quaternion.AngleAxis(90, Vector3.up));
     }
 
     private void RotateRight()
     {
+        RotateBlockAnimated(Quaternion.AngleAxis(-90, Vector3.up));
+    }
+
+    private void RotateBlock(Quaternion rotation)
+    {
         if (!_isDragging && !_selectedBlock) return;
-        _selectedBlock.transform.Rotate(0, -90, 0);
+        // Apply the rotation
+        _selectedBlock.transform.rotation = rotation * _selectedBlock.transform.rotation;
+        _localGrabOffset = Quaternion.Inverse(rotation) * _localGrabOffset;
+    }
+    
+    private void RotateBlockAnimated(Quaternion deltaRotation)
+    {
+        if (!_isDragging || _selectedBlock == null) return;
+
+        Quaternion startRot = _selectedBlock.transform.rotation;
+        Quaternion endRot = deltaRotation * startRot;
+
+        Vector3 grabPointWorldBefore = _selectedBlock.transform.TransformPoint(_localGrabOffset);
+
+        // Kill any existing rotation tweens on this object
+        _selectedBlock.transform.DOKill();
+
+        // Tween the rotation with custom logic to preserve grab point
+        _selectedBlock.transform
+            .DORotateQuaternion(endRot, 0.25f)
+            .SetEase(Ease.InOutQuad)
+            .OnUpdate(() =>
+            {
+                Vector3 grabPointWorldAfter = _selectedBlock.transform.TransformPoint(_localGrabOffset);
+                Vector3 correction = grabPointWorldBefore - grabPointWorldAfter;
+                _selectedBlock.transform.position += correction;
+            })
+            .OnComplete(() =>
+            {
+                // After rotation is complete, apply the inverse rotation to local offset
+                _localGrabOffset = Quaternion.Inverse(deltaRotation) * _localGrabOffset;
+            });
     }
 }

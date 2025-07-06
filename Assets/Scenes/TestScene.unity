@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hoverHeight: 3
-  moveSpeed: 0.01
+  moveSpeed: 0.1
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -1251,11 +1251,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 26964f8a13fb6ff418c57296b313cae6, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071067
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 26964f8a13fb6ff418c57296b313cae6, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 26964f8a13fb6ff418c57296b313cae6, type: 3}
       propertyPath: m_LocalRotation.y
@@ -1263,7 +1263,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 26964f8a13fb6ff418c57296b313cae6, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 26964f8a13fb6ff418c57296b313cae6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1277,6 +1277,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 26964f8a13fb6ff418c57296b313cae6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c5888357c1c9d485e9a4a35388b0b2a0, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 26964f8a13fb6ff418c57296b313cae6, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 85b36703cbb374b55ae9445022434077, type: 2}
     - target: {fileID: 919132149155446097, guid: 26964f8a13fb6ff418c57296b313cae6, type: 3}
       propertyPath: m_Name
       value: test_block3
