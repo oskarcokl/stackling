@@ -1209,7 +1209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e0f08d53e67246e18e0fae697638148, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverHeight: 0
+  hoverHeight: 1
   collider: {fileID: 1730647416}
 --- !u!4 &1730647415
 Transform:

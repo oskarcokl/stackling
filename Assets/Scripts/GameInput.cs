@@ -12,7 +12,8 @@ public class GameInput : MonoBehaviour
         public Vector2 cursorPosition;
     }
     
-    public event EventHandler OnPickupAction;
+    public event EventHandler OnPickupActionStarted;
+    public event EventHandler OnPickupActionEnded;
 
 
     // private InputSystem_Actions.PlayerInputActions _playerInputActions;
@@ -27,11 +28,13 @@ public class GameInput : MonoBehaviour
         
         _input.PlayerInput.Enable();
         
-        _input.PlayerInput.PickUp.performed += PickUpOnPerformed;
+        _input.PlayerInput.PickUp.started += PickUpOnStarted;
+		_input.PlayerInput.PickUp.canceled += PickUpOnCanceled;
         _input.PlayerInput.CursorMove.performed += CursorMoveOnPerformed;
     }
 
-    private void CursorMoveOnPerformed(InputAction.CallbackContext obj)
+
+	private void CursorMoveOnPerformed(InputAction.CallbackContext obj)
     {
         // REMINDER: Maybe we will have to send the mouse coords when the
         // action is invoked. Will see how the program develops.
@@ -41,10 +44,15 @@ public class GameInput : MonoBehaviour
         OnCursorMove?.Invoke(this, EventArgs.Empty);
     }
 
-    private void PickUpOnPerformed(InputAction.CallbackContext obj)
+	private void PickUpOnCanceled(InputAction.CallbackContext obj)
+	{
+        OnPickupActionEnded?.Invoke(this, EventArgs.Empty);
+	}
+
+    private void PickUpOnStarted(InputAction.CallbackContext obj)
     {
         //Debug.Log("Pick up action");
-        OnPickupAction?.Invoke(this, EventArgs.Empty);
+        OnPickupActionStarted?.Invoke(this, EventArgs.Empty);
     }
 
     public Vector3 GetCursorPosition()

@@ -4,14 +4,24 @@ using UnityEngine;
 public class PickUpManager : MonoBehaviour
 {
     private Draggable pickedUpObject; 
-    
+
     private void Start()
     {
         GameInput.Instance.OnCursorMove += GameInputOnOnCursorMove;
-        GameInput.Instance.OnPickupAction += GameInputOnOnPickupAction;
+        GameInput.Instance.OnPickupActionStarted += GameInputOnOnPickupActionStarted;
+		GameInput.Instance.OnPickupActionEnded += GameInputOnPickupActionEnded;
     }
 
-    private void GameInputOnOnPickupAction(object sender, EventArgs e)
+	private void GameInputOnPickupActionEnded(object sender, EventArgs e)
+	{
+        if (pickedUpObject != null)
+        {
+            pickedUpObject.Drop();
+            pickedUpObject = null;
+        }
+	}
+
+	private void GameInputOnOnPickupActionStarted(object sender, EventArgs e)
     {
         Debug.Log("Pick up action");
         var ray = Camera.main.ScreenPointToRay(GameInput.Instance.GetCursorPosition());
@@ -28,11 +38,18 @@ public class PickUpManager : MonoBehaviour
 
     private void GameInputOnOnCursorMove(object sender, EventArgs e)
     {
-        if (pickedUpObject)
+        if (pickedUpObject != null)
         {
-            Debug.Log("World pos: " +Camera.main.ScreenToWorldPoint(GameInput.Instance.GetCursorPosition()) );
             var cursorPos = GameInput.Instance.GetCursorPosition();
-            pickedUpObject.Move(Camera.main.ScreenToWorldPoint(new Vector3(cursorPos.x, cursorPos.y, 10)));
+            var ray = Camera.main.ScreenPointToRay(cursorPos);
+            Plane ground = new Plane(Vector3.up, new Vector3(0, 2f, 0));
+    
+            if (ground.Raycast(ray, out float enter))
+            {
+                var lastHit = ray.GetPoint(enter);
+
+				pickedUpObject.Move(lastHit);
+            }
         }
     }
     
