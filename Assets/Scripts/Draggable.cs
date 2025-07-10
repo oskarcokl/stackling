@@ -56,7 +56,20 @@ public class Draggable : MonoBehaviour
 		// Drop the object on the ground. Maybe we can make this with or without gravity.
 		// But for now. I think we should just do it without gravity since 
 		// that is the original vision.
-		transform.position = new Vector3(transform.position.x, 1, transform.position.z);
+	
+		if (ColliderUnderneath(out var hitPoint))
+		{
+			// TODO: currently hardcoding the half width to correctly set the position
+			// this needs to be somehow done programatically
+			// We could have a a point at the bottom of the object and move that?
+			transform.position = new Vector3(transform.position.x, hitPoint.y + 0.5f, transform.position.z);
+		}
+		else
+		{
+			var defaultY = 1f;
+			transform.position = new Vector3(transform.position.x, defaultY, transform.position.z);
+		}
+
 		_state = State.Idle;
 	}
 
@@ -73,9 +86,6 @@ public class Draggable : MonoBehaviour
 
 		var maxCastDistance = 3f;
 		var extentPadding = .2f;
-
-		Debug.Log(layerMask);
-
 
 		var collisions = Physics.BoxCastAll(raycastDownPoint.position, collider.bounds.extents + (Vector3.one * extentPadding), Vector3.down, transform.rotation, maxCastDistance);
 		foreach (var collision in collisions )
