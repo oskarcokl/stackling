@@ -23,13 +23,11 @@ public class PickUpManager : MonoBehaviour
 
 	private void GameInputOnOnPickupActionStarted(object sender, EventArgs e)
     {
-        Debug.Log("Pick up action");
         var ray = Camera.main.ScreenPointToRay(GameInput.Instance.GetCursorPosition());
         if (Physics.Raycast(ray, out var hit, Mathf.Infinity))
         {
             if (hit.transform.TryGetComponent(out Draggable draggable))
             {
-                Debug.Log("Pick up");
                 pickedUpObject = draggable;
                 pickedUpObject.PickUp();
             }
@@ -38,19 +36,33 @@ public class PickUpManager : MonoBehaviour
 
     private void GameInputOnOnCursorMove(object sender, EventArgs e)
     {
+        // We are going to accept drift. The base hover plane will be 2f above 0. 
+        // We will still check under the object for collision but we will be ignoring the
+        // floor since that will be covered by the hover plane.
         if (pickedUpObject != null)
         {
+            var planeHeight = 0f;
+            Plane ground = new Plane(Vector3.up, new Vector3(0, planeHeight, 0));
+
+
             var cursorPos = GameInput.Instance.GetCursorPosition();
             var ray = Camera.main.ScreenPointToRay(cursorPos);
-            Plane ground = new Plane(Vector3.up, new Vector3(0, 2f, 0));
     
             if (ground.Raycast(ray, out float enter))
             {
-                var lastHit = ray.GetPoint(enter);
+                var cursorWorldPosition = ray.GetPoint(enter);
 
-				pickedUpObject.Move(lastHit);
-            }
-        }
+				// If collider underneath than mover
+				pickedUpObject.Move(new Vector3(cursorWorldPosition.x, pickedUpObject.transform.position.y, cursorWorldPosition.z));
+
+				if (pickedUpObject.ColliderUnderneath(out Vector3 hitPoint))
+				{
+					var hoverMargin = 1f;
+					var hoverHeight = hitPoint.y + hoverMargin;
+                    pickedUpObject.Move(new Vector3(pickedUpObject.transform.position.x, hoverHeight, pickedUpObject.transform.position.z));
+				}
+			}
+		}
     }
     
 }
