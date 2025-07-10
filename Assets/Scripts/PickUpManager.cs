@@ -3,7 +3,9 @@ using UnityEngine;
 
 public class PickUpManager : MonoBehaviour
 {
-    private Draggable pickedUpObject; 
+    private Draggable pickedUpObject;
+
+    private float planeHeight = 0f;
 
     private void Start()
     {
@@ -29,6 +31,9 @@ public class PickUpManager : MonoBehaviour
             if (hit.transform.TryGetComponent(out Draggable draggable))
             {
                 pickedUpObject = draggable;
+                // This nicely solve the problem of objects moving in x and z when they are picked up
+                // when their y is not close to the ground floor
+                planeHeight = hit.point.y;
                 pickedUpObject.PickUp();
             }
         }
@@ -41,8 +46,7 @@ public class PickUpManager : MonoBehaviour
         // floor since that will be covered by the hover plane.
         if (pickedUpObject != null)
         {
-            var planeHeight = 0f;
-            Plane ground = new Plane(Vector3.up, new Vector3(0, planeHeight, 0));
+            Plane ground = new Plane(Vector3.up, new Vector3(0f, planeHeight, 0f));
 
 
             var cursorPos = GameInput.Instance.GetCursorPosition();
