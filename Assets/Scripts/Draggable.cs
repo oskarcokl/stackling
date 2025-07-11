@@ -69,7 +69,7 @@ public class Draggable : MonoBehaviour
 			// TODO: currently hardcoding the half width to correctly set the position
 			// this needs to be somehow done programatically
 			// We could have a a point at the bottom of the object and move that?
-			transform.position = new Vector3(transform.position.x, hitPoint.y + 0.5f, transform.position.z);
+			transform.position = new Vector3(transform.position.x, hitPoint.y + _collider.bounds.extents.y, transform.position.z);
 		}
 		else
 		{
@@ -108,5 +108,10 @@ public class Draggable : MonoBehaviour
 		}
 
 		return false;
+	}
+
+	public float GetHalfHeight()
+	{
+		return _collider.bounds.extents.y;	
 	}
 }

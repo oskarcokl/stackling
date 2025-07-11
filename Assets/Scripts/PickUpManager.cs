@@ -62,7 +62,7 @@ public class PickUpManager : MonoBehaviour
 				if (pickedUpObject.ColliderUnderneath(out Vector3 hitPoint))
 				{
 					var hoverMargin = 1f;
-					var hoverHeight = hitPoint.y + hoverMargin;
+					var hoverHeight = hitPoint.y + pickedUpObject.GetHalfHeight() + hoverMargin;
                     pickedUpObject.Move(new Vector3(pickedUpObject.transform.position.x, hoverHeight, pickedUpObject.transform.position.z));
 				}
 			}
