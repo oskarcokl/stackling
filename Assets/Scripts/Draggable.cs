@@ -4,7 +4,7 @@ using UnityEngine;
 public class Draggable : MonoBehaviour
 {
 	// This script enables an object to be picked up and dragger around. 
-	[SerializeField] private Collider collider;
+	// [SerializeField] private Collider  collider;
 	[SerializeField] private LayerMask layerMask;
 	[SerializeField] private Transform raycastDownPoint;
 
@@ -17,6 +17,13 @@ public class Draggable : MonoBehaviour
 	}
 
 	private State _state;
+	private Collider _collider;
+
+	private void Awake()
+	{
+		_collider = GetComponent<Collider>();
+		_state = State.Idle;
+	}
 
 
 	public void PickUp()
@@ -84,23 +91,20 @@ public class Draggable : MonoBehaviour
 		// Default value. Only change if actually colliding with something
 		hitPoint = Vector3.zero;
 
-		var maxCastDistance = 3f;
+		var maxCastDistance = 10f;
 		var extentPadding = .2f;
 
-		var collisions = Physics.BoxCastAll(raycastDownPoint.position, collider.bounds.extents + (Vector3.one * extentPadding), Vector3.down, transform.rotation, maxCastDistance);
+		var collisions = Physics.BoxCastAll(raycastDownPoint.position, _collider.bounds.extents + (Vector3.one * extentPadding), Vector3.down, transform.rotation, maxCastDistance);
 		foreach (var collision in collisions )
 		{
-			if (collision.collider != collider) // Ignore collision against self
+			Debug.Log(collision.collider.name);
+			if (collision.collider != _collider) // Ignore collision against self
 			{
 				// Hit collider that isnt the object itself.
 				hitPoint = collision.point;
 				return true;
 			}
-			else
-			{
-				// Didn't hit any collider.
-				return false;
-			}
+			// Don't early return in the else statement like a fucking idiot!
 		}
 
 		return false;

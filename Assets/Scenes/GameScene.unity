@@ -1380,6 +1380,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1345124076139818951, guid: be0da1d2c48295b47801c76dc2a3b263, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4800365563906451485, guid: be0da1d2c48295b47801c76dc2a3b263, type: 3}
       propertyPath: m_Name
       value: PickUpObject
