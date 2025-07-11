@@ -4,8 +4,6 @@ using UnityEngine;
 public class Draggable : MonoBehaviour
 {
 	// This script enables an object to be picked up and dragger around. 
-	// [SerializeField] private Collider  collider;
-	[SerializeField] private LayerMask layerMask;
 	[SerializeField] private Transform raycastDownPoint;
 
 
@@ -66,9 +64,8 @@ public class Draggable : MonoBehaviour
 	
 		if (ColliderUnderneath(out var hitPoint))
 		{
-			// TODO: currently hardcoding the half width to correctly set the position
-			// this needs to be somehow done programatically
-			// We could have a a point at the bottom of the object and move that?
+			// Currently using the _collider.bounds.extends.y. This assumes that we are never going to rotate the object
+			// also there might be other possbile sollutions to this I just didnt think of any.
 			transform.position = new Vector3(transform.position.x, hitPoint.y + _collider.bounds.extents.y, transform.position.z);
 		}
 		else
@@ -89,23 +86,50 @@ public class Draggable : MonoBehaviour
 	public bool ColliderUnderneath(out Vector3 hitPoint)
 	{
 		// Default value. Only change if actually colliding with something
+		var originalLayer = gameObject.layer;
+		
+		gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 		hitPoint = Vector3.zero;
-
+		
+		// NOTES: Not entirely sure if this is needed but it does seem to work so I'm gonna leave it in.
+		RaycastHit highestCollider = new RaycastHit
+		{
+			distance = float.MaxValue
+		};
+		
+		 
 		var maxCastDistance = 10f;
 		var extentPadding = .2f;
 
 		var collisions = Physics.BoxCastAll(raycastDownPoint.position, _collider.bounds.extents + (Vector3.one * extentPadding), Vector3.down, transform.rotation, maxCastDistance);
+
+		if (collisions.Length > 0)
+		{
+			highestCollider = collisions[0];
+		}
+		
 		foreach (var collision in collisions )
 		{
-			Debug.Log(collision.collider.name);
 			if (collision.collider != _collider) // Ignore collision against self
 			{
 				// Hit collider that isnt the object itself.
-				hitPoint = collision.point;
-				return true;
+				if (highestCollider.distance > collision.distance)
+				{
+					highestCollider = collision;
+				}
 			}
 			// Don't early return in the else statement like a fucking idiot!
 		}
+
+		gameObject.layer = originalLayer;
+		
+		if (highestCollider.distance < float.MaxValue)
+		{
+			Debug.Log(highestCollider.transform.name);	
+			hitPoint = highestCollider.point;
+			return true;
+		}
+		
 
 		return false;
 	}
