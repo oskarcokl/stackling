@@ -74,7 +74,7 @@ public class PickUpManager : MonoBehaviour
 				{
 					var hoverMargin = 1f;
 					var hoverHeight = hitPoint.y + pickedUpObject.GetHalfHeight() + hoverMargin;
-                    pickedUpObject.Move(new Vector3(pickedUpObject.transform.position.x, hoverHeight, pickedUpObject.transform.position.z));
+                    pickedUpObject.Move(new Vector3(cursorWorldPosition.x, hoverHeight, cursorWorldPosition.z));
 				}
 			}
 		}

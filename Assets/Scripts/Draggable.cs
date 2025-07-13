@@ -10,12 +10,14 @@ public class Draggable : MonoBehaviour
 	enum State
 	{
 		Idle,
-		PickUp,
 		Dragging,
+		Dropping,
 	}
 
 	private State _state;
 	private Collider _collider;
+	private Vector3 _moveVelocity =  Vector3.zero;
+	private Vector3 _targetPosition;
 
 	private void Awake()
 	{
@@ -23,37 +25,30 @@ public class Draggable : MonoBehaviour
 		_state = State.Idle;
 	}
 
+	private void Update()
+	{
+		if (_state == State.Dragging || _state == State.Dropping)
+		{
+			//Debug.Log("_targetPosition " + _targetPosition);
+			transform.position = Vector3.SmoothDamp(transform.position, _targetPosition, ref _moveVelocity, 0.1f);
+			if (_state == State.Dropping && transform.position == _targetPosition)
+			{
+				_state = State.Idle;
+			}
+		}
+	}
+
 
 	public void PickUp()
 	{
-		// Pick Up the object
-		_state = State.PickUp;
-		// Maybe we dont nee to se the hover here. Maybe we just need 
-		// to set some sort of state to animate it.
-		//transform.position += Vector3.up * hoverHeight;
 		_state = State.Dragging;
 	}
 
-	public void Move(Vector3 destination)
+	public void Move(Vector3 targetPosition)
 	{
 		// Move the object to some location in the world
 		// Keep in mind the hover
-		var maxCastDistance = 20f;
-		var extentPadding = 1f;
-		transform.position = destination;
-
-		//if (Physics.BoxCast(transform.position, collider.bounds.extents + (Vector3.one * extentPadding), Vector3.down, out var hit, transform.rotation,
-		//        maxCastDistance))
-		//{
-		//    // If hit a collider then hover "hoverHeight" above it.
-		//    transform.position += hit.point + Vector3.up * hoverHeight; ;
-		//}
-		//else
-		//{
-		//    // Didn't hit collider hover hoverHeight above ground.
-		//    transform.position += Vector3.up * hoverHeight; ;
-		//}
-		_state = State.Dragging;
+		_targetPosition = targetPosition;
 	}
 
 	public void Drop()
@@ -61,20 +56,19 @@ public class Draggable : MonoBehaviour
 		// Drop the object on the ground. Maybe we can make this with or without gravity.
 		// But for now. I think we should just do it without gravity since 
 		// that is the original vision.
-	
+		_state = State.Dropping;	
 		if (ColliderUnderneath(out var hitPoint))
 		{
 			// Currently using the _collider.bounds.extends.y. This assumes that we are never going to rotate the object
 			// also there might be other possbile sollutions to this I just didnt think of any.
-			transform.position = new Vector3(transform.position.x, hitPoint.y + _collider.bounds.extents.y, transform.position.z);
+			_targetPosition = new Vector3(transform.position.x, hitPoint.y + _collider.bounds.extents.y, transform.position.z);
 		}
 		else
 		{
-			var defaultY = 1f;
-			transform.position = new Vector3(transform.position.x, defaultY, transform.position.z);
+			// This is a fallback if there is somehow no collider underneath
+			var defaultY = _collider.bounds.extents.y;
+			_targetPosition = new Vector3(transform.position.x, defaultY, transform.position.z);
 		}
-
-		_state = State.Idle;
 	}
 
 	public void Rotate(Quaternion rotateBy, Vector3 axis)
@@ -125,7 +119,6 @@ public class Draggable : MonoBehaviour
 		
 		if (highestCollider.distance < float.MaxValue)
 		{
-			Debug.Log(highestCollider.transform.name);	
 			hitPoint = highestCollider.point;
 			return true;
 		}
