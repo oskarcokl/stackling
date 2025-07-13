@@ -7,12 +7,9 @@ using UnityEngine.UI;
 public class CursorController : MonoBehaviour
 {
     [Header("Sprites")] 
-    [SerializeField] Sprite holdingCursorSprite;
+    [SerializeField] Texture2D holdingCursorSprite;
     [SerializeField] Texture2D idleCursorSprite;
     [SerializeField] Texture2D releaseCursorSprite;
-    
-    [Header("UI Elements")]
-    [SerializeField] private Image fakeCursorImage;
     
     [Header("Timers")]
     [SerializeField] private float releaseSpriteTime = 1;
@@ -25,29 +22,35 @@ public class CursorController : MonoBehaviour
         Release,
         Idle,
     }
-    
-    private bool _isTracking = false;
 
-    private void Start()
+
+    public void Start()
     {
-        fakeCursorImage.enabled = false;
+        PickUpManager.Instance.OnPickUp += PickUpManagerOnOnPickUp;
+        PickUpManager.Instance.OnDrop += PickUpManagerOnOnDrop;
+        
     }
 
-    private void Update()
+    private void PickUpManagerOnOnDrop(object sender, EventArgs e)
     {
-        if (_isTracking)
+        SetState(CursorState.Release);
+        // Invoke(nameof(SetState), 0.1f);
+        // wait 0.5 sec
+        DelayedCall(releaseSpriteTime, () =>
         {
-            var screenPos = Camera.main.WorldToScreenPoint(grabPos);
-            fakeCursorImage.transform.position = screenPos;
-        }
+            SetState(CursorState.Idle);
+        });
+        
     }
 
+    private void PickUpManagerOnOnPickUp(object sender, EventArgs e)
+    {
+        SetState(CursorState.Holding);
+    }
 
     public void TrackBlock()
     {
         SetState(CursorState.Holding);
-        _isTracking = true;
-        // move the 
     }
 
     public void SetPosition(Vector3 position)
@@ -57,8 +60,6 @@ public class CursorController : MonoBehaviour
 
     public void ReleaseBlock()
     {
-        _isTracking = false;
-        fakeCursorImage.enabled = false;
         Mouse.current.WarpCursorPosition(Camera.main.WorldToScreenPoint(grabPos));
         // move actual cursor to correct position
         SetState(CursorState.Release);
@@ -90,18 +91,13 @@ public class CursorController : MonoBehaviour
         switch (state)
         {
             case CursorState.Holding:
-                // Switch to image rendering
-                Cursor.visible = false;
-                fakeCursorImage.enabled = true;
+                Cursor.SetCursor(holdingCursorSprite, Vector2.zero, CursorMode.Auto);
                 break;
             case CursorState.Idle:
                 Cursor.SetCursor(idleCursorSprite, new Vector2(5, 4), CursorMode.Auto);
-                Cursor.visible = true;
                 break;
             case CursorState.Release:
                 Cursor.SetCursor(releaseCursorSprite, Vector2.zero, CursorMode.Auto);
-                Cursor.visible = true;
-                // go to release sprite
                 break;
         }
     }

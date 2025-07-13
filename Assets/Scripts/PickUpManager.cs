@@ -3,9 +3,18 @@ using UnityEngine;
 
 public class PickUpManager : MonoBehaviour
 {
+	public static PickUpManager Instance { get; private set; }
+	public event EventHandler OnPickUp;
+	public event EventHandler OnDrop;
+	
     private Draggable pickedUpObject;
 
     private float planeHeight = 0f;
+
+    public void Awake()
+    {
+		Instance = this; 
+    }
 
     private void Start()
     {
@@ -20,6 +29,7 @@ public class PickUpManager : MonoBehaviour
         {
             pickedUpObject.Drop();
             pickedUpObject = null;
+            OnDrop?.Invoke(this, EventArgs.Empty);
         }
 	}
 
@@ -35,6 +45,7 @@ public class PickUpManager : MonoBehaviour
                 // when their y is not close to the ground floor
                 planeHeight = hit.point.y;
                 pickedUpObject.PickUp();
+                OnPickUp?.Invoke(this, EventArgs.Empty);
             }
         }
     }
