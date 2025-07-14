@@ -683,13 +683,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc3349332e6147746aa3f2c127345e7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cameraTransofrm: {fileID: 330585546}
-  _maxZoom: 20
-  _minZoom: 15
-  _rotationSpeed: 25
-  _zoomSpeed: 50
-  _maxVerticalAngle: 20
-  _minVerticalAngle: -20
+  cameraTransofrm: {fileID: 330585546}
+  maxZoom: 20
+  minZoom: 15
+  rotationSpeedX: 150
+  rotationSpeedY: 150
+  zoomSpeed: 10
+  maxVerticalAngle: 30
+  minVerticalAngle: -10
 --- !u!1 &799147022
 GameObject:
   m_ObjectHideFlags: 0

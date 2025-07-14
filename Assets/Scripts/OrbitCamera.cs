@@ -2,32 +2,43 @@ using System;
 using System.Numerics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
 public class OrbitCamera : MonoBehaviour
 {
-    [SerializeField] private Transform _cameraTransofrm; 
-    [SerializeField] private float _maxZoom = 20f;
-    [SerializeField] private float _minZoom = 2f;
-    [SerializeField] private float _rotationSpeed = 5f;
-    [SerializeField] private float _zoomSpeed = 5f;
-    [SerializeField] private float _maxVerticalAngle = 60f;
-    [SerializeField] private float _minVerticalAngle = -30f;
+    [SerializeField] private Transform cameraTransofrm; 
+    [SerializeField] private float maxZoom = 20f;
+    [SerializeField] private float minZoom = 2f;
+    [SerializeField] private float rotationSpeedX = 5f;
+    [SerializeField] private float rotationSpeedY = 5f;
+    [SerializeField] private float zoomSpeed = 5f;
+    [SerializeField] private float maxVerticalAngle = 60f;
+    [SerializeField] private float minVerticalAngle = -30f;
     
     private InputSystem_Actions _input;
     
     private Vector2 _lookInput = Vector2.zero;
     private float _zoomInput = 0f;
 
-    private float verticalAngle = 0f;
-    private float horizontalAngle = 0f;
+    private float _yAngle = 0f;
+    private float _xAngle = 0f;
+    private float _distance = 0f;
+    
+    private float _targetDistance = 0f;
+    private float _targetYAngle = 0f;
+    private float _targetXAngle = 0f;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        var angles = transform.eulerAngles;
+        _yAngle = angles.y;
+        _xAngle = angles.x;
         
+        _distance = minZoom;
     }
 
     private void OnEnable()
@@ -48,25 +59,27 @@ public class OrbitCamera : MonoBehaviour
     {
         if (_input.Camera.LookButton.IsPressed() && !PickUpManager.Instance.IsObjectPickedUp())
         {
-            verticalAngle -= _lookInput.y * _rotationSpeed * Time.deltaTime;
-            horizontalAngle += _lookInput.x * _rotationSpeed * Time.deltaTime;
+            _targetYAngle -= _lookInput.y * rotationSpeedY * Time.deltaTime;
+            _targetXAngle += _lookInput.x * rotationSpeedX * Time.deltaTime;
             
-            verticalAngle = Math.Clamp(verticalAngle, _minVerticalAngle, _maxVerticalAngle);
+            _targetYAngle = Math.Clamp(_targetYAngle, minVerticalAngle, maxVerticalAngle);
             
-            transform.rotation = Quaternion.Euler(verticalAngle, horizontalAngle, 0f);
+            _yAngle = Mathf.LerpAngle(_yAngle, _targetYAngle, 1f);
+            _xAngle = Mathf.LerpAngle(_xAngle, _targetXAngle, .1f);
+            
+            transform.rotation = Quaternion.Euler(_yAngle, _xAngle, 0f);
         }
 
         if (Math.Abs(_zoomInput) >= 0.01f)
         {
-            var dir = _cameraTransofrm.localPosition.normalized;
-            var dist = _cameraTransofrm.localPosition.magnitude;
+            var dir = cameraTransofrm.localPosition.normalized;
+            _targetDistance = cameraTransofrm.localPosition.magnitude;
             
-            dist -= _zoomInput * _zoomSpeed * Time.deltaTime;
-            dist = Mathf.Clamp(dist, _minZoom, _maxZoom);
-            _cameraTransofrm.localPosition = dir * dist;
+            _targetDistance -= _zoomInput * zoomSpeed * Time.deltaTime;
+            _targetDistance = Mathf.Clamp(_targetDistance, minZoom, maxZoom);
+            _distance = Mathf.Lerp(_distance, _targetDistance, .5f); 
+            
+            cameraTransofrm.localPosition = dir * _distance;
         }
-
-        // Is this needed?
-        _zoomInput = 0f;
     }
 }
