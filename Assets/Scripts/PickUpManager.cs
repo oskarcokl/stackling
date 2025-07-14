@@ -79,5 +79,10 @@ public class PickUpManager : MonoBehaviour
 			}
 		}
     }
+	
+	public bool IsObjectPickedUp() 
+	{
+		return pickedUpObject != null;
+	}
     
 }

@@ -37,7 +37,6 @@ public class OrbitCamera : MonoBehaviour
         _input.Camera.Look.performed += ctx => _lookInput = ctx.ReadValue<Vector2>();
         _input.Camera.Look.canceled += _ => _lookInput = Vector2.zero;
         
-        
         _input.Camera.Zoom.performed += ctx => _zoomInput = ctx.ReadValue<Vector2>().y;
         _input.Camera.Zoom.canceled += _ => _zoomInput = 0f;
         
@@ -45,10 +44,9 @@ public class OrbitCamera : MonoBehaviour
     }
 
     // Update is called once per frame
-    /*
     void Update()
     {
-        if (Mouse.current.leftButton.isPressed && !InputContext.Instance.IsDraggingBlock)
+        if (_input.Camera.LookButton.IsPressed() && !PickUpManager.Instance.IsObjectPickedUp())
         {
             verticalAngle -= _lookInput.y * _rotationSpeed * Time.deltaTime;
             horizontalAngle += _lookInput.x * _rotationSpeed * Time.deltaTime;
@@ -71,5 +69,4 @@ public class OrbitCamera : MonoBehaviour
         // Is this needed?
         _zoomInput = 0f;
     }
-*/
 }
