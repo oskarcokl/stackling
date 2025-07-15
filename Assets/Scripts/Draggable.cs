@@ -6,6 +6,7 @@ public class Draggable : MonoBehaviour
 	// This script enables an object to be picked up and dragger around. 
 	[SerializeField] private Transform raycastDownPoint;
 	[SerializeField] private PlacementIndicatorVisual placementIndicatorVisual;
+	[SerializeField] private float height;
 
 
 	enum State
@@ -98,7 +99,7 @@ public class Draggable : MonoBehaviour
 		var maxCastDistance = 10f;
 		var extentPadding = .2f;
 
-		var collisions = Physics.BoxCastAll(raycastDownPoint.position, _collider.bounds.extents + (Vector3.one * extentPadding), Vector3.down, transform.rotation, maxCastDistance);
+		var collisions = Physics.BoxCastAll(raycastDownPoint.position, _collider.bounds.extents + ((Vector3.left + Vector3.forward) * extentPadding), Vector3.down, transform.rotation, maxCastDistance);
 
 		if (collisions.Length > 0)
 		{
@@ -138,5 +139,10 @@ public class Draggable : MonoBehaviour
 	public Vector3 GetExtents()
 	{
 		return _collider.bounds.extents;	
+	}
+
+	public float GetHeight()
+	{
+		return height;
 	}
 }

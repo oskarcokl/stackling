@@ -243,6 +243,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7610427338265452537, guid: 417791cfe24fb4271b8a2eedd9df2ffd, type: 3}
+      propertyPath: height
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7610427338265452537, guid: 417791cfe24fb4271b8a2eedd9df2ffd, type: 3}
       propertyPath: placementIndicatorVisual
       value: 
       objectReference: {fileID: 6040727472413024237}

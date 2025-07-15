@@ -73,7 +73,7 @@ public class PickUpManager : MonoBehaviour
 				if (pickedUpObject.ColliderUnderneath(out Vector3 hitPoint))
 				{
 					var hoverMargin = 1f;
-					var hoverHeight = hitPoint.y + (pickedUpObject.GetHalfHeight() * 2) + hoverMargin;
+					var hoverHeight = hitPoint.y + (pickedUpObject.GetHeight() * 1.5f) + hoverMargin;
                     pickedUpObject.Move(new Vector3(cursorWorldPosition.x, hoverHeight, cursorWorldPosition.z));
 				}
 			}
@@ -84,5 +84,4 @@ public class PickUpManager : MonoBehaviour
 	{
 		return pickedUpObject != null;
 	}
-    
 }
