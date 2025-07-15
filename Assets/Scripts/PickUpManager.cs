@@ -21,9 +21,27 @@ public class PickUpManager : MonoBehaviour
         GameInput.Instance.OnCursorMove += GameInputOnOnCursorMove;
         GameInput.Instance.OnPickupActionStarted += GameInputOnOnPickupActionStarted;
 		GameInput.Instance.OnPickupActionEnded += GameInputOnPickupActionEnded;
+		GameInput.Instance.OnRotateLeftAction += GameInputOnOnRotateLeftAction;
+		GameInput.Instance.OnRotateRightAction += GameInputOnOnRotateRightAction;
+    }
+    
+    private void GameInputOnOnRotateRightAction(object sender, EventArgs e)
+    {
+	    if (pickedUpObject != null)
+	    {
+		    pickedUpObject.RotateRight();
+	    }
     }
 
-	private void GameInputOnPickupActionEnded(object sender, EventArgs e)
+    private void GameInputOnOnRotateLeftAction(object sender, EventArgs e)
+    {
+	    if (pickedUpObject != null)
+	    {
+		    pickedUpObject.RotateLeft();
+	    }
+    }
+
+    private void GameInputOnPickupActionEnded(object sender, EventArgs e)
 	{
         if (pickedUpObject != null)
         {
