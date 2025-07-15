@@ -5,6 +5,7 @@ public class Draggable : MonoBehaviour
 {
 	// This script enables an object to be picked up and dragger around. 
 	[SerializeField] private Transform raycastDownPoint;
+	[SerializeField] private PlacementIndicatorVisual placementIndicatorVisual;
 
 
 	enum State
@@ -42,6 +43,7 @@ public class Draggable : MonoBehaviour
 	public void PickUp()
 	{
 		_state = State.Dragging;
+		placementIndicatorVisual.Show();
 	}
 
 	public void Move(Vector3 targetPosition)
@@ -69,6 +71,7 @@ public class Draggable : MonoBehaviour
 			var defaultY = _collider.bounds.extents.y;
 			_targetPosition = new Vector3(transform.position.x, defaultY, transform.position.z);
 		}
+		placementIndicatorVisual.Hide();
 	}
 
 	public void Rotate(Quaternion rotateBy, Vector3 axis)
@@ -130,5 +133,10 @@ public class Draggable : MonoBehaviour
 	public float GetHalfHeight()
 	{
 		return _collider.bounds.extents.y;	
+	}
+
+	public Vector3 GetExtents()
+	{
+		return _collider.bounds.extents;	
 	}
 }
