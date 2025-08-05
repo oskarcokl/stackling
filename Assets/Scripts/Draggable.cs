@@ -5,6 +5,8 @@ public class Draggable : MonoBehaviour
 {
 	// This script enables an object to be picked up and dragger around. 
 	[SerializeField] private Transform raycastDownPoint;
+	[SerializeField] private PlacementIndicatorVisual placementIndicatorVisual;
+	[SerializeField] private float height;
 
 
 	enum State
@@ -18,6 +20,9 @@ public class Draggable : MonoBehaviour
 	private Collider _collider;
 	private Vector3 _moveVelocity =  Vector3.zero;
 	private Vector3 _targetPosition;
+	private Quaternion _rotation;
+	private Quaternion _targetRotation;
+	private bool rotating = false;
 
 	private void Awake()
 	{
@@ -36,12 +41,24 @@ public class Draggable : MonoBehaviour
 				_state = State.Idle;
 			}
 		}
+
+		if (rotating)
+		{
+			// TODO: This doesnt change in nice clean intervals. Add some sort of fix function that just
+			// snap the number to the nearest 90 increment.
+			transform.rotation = Quaternion.Slerp(transform.rotation, _targetRotation, 0.1f);
+			if (transform.rotation == _targetRotation)
+			{
+				rotating = false;
+			}
+		}
 	}
 
 
 	public void PickUp()
 	{
 		_state = State.Dragging;
+		placementIndicatorVisual.Show();
 	}
 
 	public void Move(Vector3 targetPosition)
@@ -69,12 +86,25 @@ public class Draggable : MonoBehaviour
 			var defaultY = _collider.bounds.extents.y;
 			_targetPosition = new Vector3(transform.position.x, defaultY, transform.position.z);
 		}
+		placementIndicatorVisual.Hide();
 	}
 
-	public void Rotate(Quaternion rotateBy, Vector3 axis)
+	public void RotateLeft()
 	{
-		// Rotates the object around the specified axis by specified amount.
-		// TODO: Implement
+		if (!rotating)
+		{
+			rotating = true;
+			_targetRotation = transform.rotation * Quaternion.AngleAxis(90, Vector3.up);
+		}
+	}
+
+	public void RotateRight()
+	{
+		if (!rotating)
+		{
+			rotating = true;			
+			_targetRotation = transform.rotation * Quaternion.AngleAxis(-90, Vector3.up);
+		}
 	}
 
 	public bool ColliderUnderneath(out Vector3 hitPoint)
@@ -95,7 +125,7 @@ public class Draggable : MonoBehaviour
 		var maxCastDistance = 10f;
 		var extentPadding = .2f;
 
-		var collisions = Physics.BoxCastAll(raycastDownPoint.position, _collider.bounds.extents + (Vector3.one * extentPadding), Vector3.down, transform.rotation, maxCastDistance);
+		var collisions = Physics.BoxCastAll(raycastDownPoint.position, _collider.bounds.extents + ((Vector3.left + Vector3.forward) * extentPadding), Vector3.down, transform.rotation, maxCastDistance);
 
 		if (collisions.Length > 0)
 		{
@@ -127,8 +157,19 @@ public class Draggable : MonoBehaviour
 		return false;
 	}
 
+	// REFACTOR: Remove unused function
 	public float GetHalfHeight()
 	{
 		return _collider.bounds.extents.y;	
+	}
+
+	public Vector3 GetExtents()
+	{
+		return _collider.bounds.extents;	
+	}
+
+	public float GetHeight()
+	{
+		return height;
 	}
 }

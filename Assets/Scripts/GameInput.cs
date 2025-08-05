@@ -14,6 +14,8 @@ public class GameInput : MonoBehaviour
     
     public event EventHandler OnPickupActionStarted;
     public event EventHandler OnPickupActionEnded;
+    public event EventHandler OnRotateRightAction;
+    public event EventHandler OnRotateLeftAction;
 
 
     // private InputSystem_Actions.PlayerInputActions _playerInputActions;
@@ -31,10 +33,22 @@ public class GameInput : MonoBehaviour
         _input.PlayerInput.PickUp.started += PickUpOnStarted;
 		_input.PlayerInput.PickUp.canceled += PickUpOnCanceled;
         _input.PlayerInput.CursorMove.performed += CursorMoveOnPerformed;
+        _input.PlayerInput.RotateLeft.performed += RotateLeftOnperformed;
+        _input.PlayerInput.RotateRight.performed += RotateRightOnperformed;
+    }
+
+    private void RotateRightOnperformed(InputAction.CallbackContext obj)
+    {
+       OnRotateRightAction?.Invoke(this, EventArgs.Empty); 
+    }
+
+    private void RotateLeftOnperformed(InputAction.CallbackContext obj)
+    {
+       OnRotateLeftAction?.Invoke(this, EventArgs.Empty); 
     }
 
 
-	private void CursorMoveOnPerformed(InputAction.CallbackContext obj)
+    private void CursorMoveOnPerformed(InputAction.CallbackContext obj)
     {
         // REMINDER: Maybe we will have to send the mouse coords when the
         // action is invoked. Will see how the program develops.

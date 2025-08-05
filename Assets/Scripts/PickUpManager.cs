@@ -21,9 +21,27 @@ public class PickUpManager : MonoBehaviour
         GameInput.Instance.OnCursorMove += GameInputOnOnCursorMove;
         GameInput.Instance.OnPickupActionStarted += GameInputOnOnPickupActionStarted;
 		GameInput.Instance.OnPickupActionEnded += GameInputOnPickupActionEnded;
+		GameInput.Instance.OnRotateLeftAction += GameInputOnOnRotateLeftAction;
+		GameInput.Instance.OnRotateRightAction += GameInputOnOnRotateRightAction;
+    }
+    
+    private void GameInputOnOnRotateRightAction(object sender, EventArgs e)
+    {
+	    if (pickedUpObject != null)
+	    {
+		    pickedUpObject.RotateRight();
+	    }
     }
 
-	private void GameInputOnPickupActionEnded(object sender, EventArgs e)
+    private void GameInputOnOnRotateLeftAction(object sender, EventArgs e)
+    {
+	    if (pickedUpObject != null)
+	    {
+		    pickedUpObject.RotateLeft();
+	    }
+    }
+
+    private void GameInputOnPickupActionEnded(object sender, EventArgs e)
 	{
         if (pickedUpObject != null)
         {
@@ -73,11 +91,15 @@ public class PickUpManager : MonoBehaviour
 				if (pickedUpObject.ColliderUnderneath(out Vector3 hitPoint))
 				{
 					var hoverMargin = 1f;
-					var hoverHeight = hitPoint.y + pickedUpObject.GetHalfHeight() + hoverMargin;
+					var hoverHeight = hitPoint.y + (pickedUpObject.GetHeight() * 1.5f) + hoverMargin;
                     pickedUpObject.Move(new Vector3(cursorWorldPosition.x, hoverHeight, cursorWorldPosition.z));
 				}
 			}
 		}
     }
-    
+	
+	public bool IsObjectPickedUp() 
+	{
+		return pickedUpObject != null;
+	}
 }
