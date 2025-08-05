@@ -4,47 +4,57 @@ using UnityEngine.InputSystem;
 
 public class GameInput : MonoBehaviour
 {
-    public static GameInput Instance { get; private set; } 
-    
+    public static GameInput Instance { get; private set; }
+
     public event EventHandler OnCursorMove;
     public class OnCursorMoveEventArgs : EventArgs
     {
         public Vector2 cursorPosition;
     }
-    
+
     public event EventHandler OnPickupActionStarted;
     public event EventHandler OnPickupActionEnded;
     public event EventHandler OnRotateRightAction;
     public event EventHandler OnRotateLeftAction;
+    public event EventHandler OnPauseUnpauseAction;
 
 
     // private InputSystem_Actions.PlayerInputActions _playerInputActions;
     private InputSystem_Actions _input;
     private Vector3 _cursorPosition;
-    
+
     private void Awake()
     {
         Instance = this;
 
         _input = new InputSystem_Actions();
-        
+
         _input.PlayerInput.Enable();
-        
+
         _input.PlayerInput.PickUp.started += PickUpOnStarted;
-		_input.PlayerInput.PickUp.canceled += PickUpOnCanceled;
+        _input.PlayerInput.PickUp.canceled += PickUpOnCanceled;
         _input.PlayerInput.CursorMove.performed += CursorMoveOnPerformed;
-        _input.PlayerInput.RotateLeft.performed += RotateLeftOnperformed;
-        _input.PlayerInput.RotateRight.performed += RotateRightOnperformed;
+        _input.PlayerInput.RotateLeft.performed += RotateLeftOnPerformed;
+        _input.PlayerInput.RotateRight.performed += RotateRightOnPerformed;
+
+        _input.UI.Enable();
+        _input.UI.PauseUnpause.performed += PauseUnpauseOnPerformed;
     }
 
-    private void RotateRightOnperformed(InputAction.CallbackContext obj)
+    private void PauseUnpauseOnPerformed(InputAction.CallbackContext obj)
     {
-       OnRotateRightAction?.Invoke(this, EventArgs.Empty); 
+        Debug.Log("OnPause action performed");
+        OnPauseUnpauseAction?.Invoke(this, EventArgs.Empty);
     }
 
-    private void RotateLeftOnperformed(InputAction.CallbackContext obj)
+    private void RotateRightOnPerformed(InputAction.CallbackContext obj)
     {
-       OnRotateLeftAction?.Invoke(this, EventArgs.Empty); 
+        OnRotateRightAction?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void RotateLeftOnPerformed(InputAction.CallbackContext obj)
+    {
+       OnRotateLeftAction?.Invoke(this, EventArgs.Empty);
     }
 
 

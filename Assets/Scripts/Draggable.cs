@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Draggable : MonoBehaviour
 {
-	// This script enables an object to be picked up and dragger around. 
+	// This script enables an object to be picked up and dragger around.
 	[SerializeField] private Transform raycastDownPoint;
 	[SerializeField] private PlacementIndicatorVisual placementIndicatorVisual;
 	[SerializeField] private float height;
@@ -71,9 +71,9 @@ public class Draggable : MonoBehaviour
 	public void Drop()
 	{
 		// Drop the object on the ground. Maybe we can make this with or without gravity.
-		// But for now. I think we should just do it without gravity since 
+		// But for now. I think we should just do it without gravity since
 		// that is the original vision.
-		_state = State.Dropping;	
+		_state = State.Dropping;
 		if (ColliderUnderneath(out var hitPoint))
 		{
 			// Currently using the _collider.bounds.extends.y. This assumes that we are never going to rotate the object
@@ -111,17 +111,17 @@ public class Draggable : MonoBehaviour
 	{
 		// Default value. Only change if actually colliding with something
 		var originalLayer = gameObject.layer;
-		
+
 		gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 		hitPoint = Vector3.zero;
-		
+
 		// NOTES: Not entirely sure if this is needed but it does seem to work so I'm gonna leave it in.
 		RaycastHit highestCollider = new RaycastHit
 		{
 			distance = float.MaxValue
 		};
-		
-		 
+
+
 		var maxCastDistance = 10f;
 		var extentPadding = .2f;
 
@@ -131,7 +131,7 @@ public class Draggable : MonoBehaviour
 		{
 			highestCollider = collisions[0];
 		}
-		
+
 		foreach (var collision in collisions )
 		{
 			if (collision.collider != _collider) // Ignore collision against self
@@ -146,13 +146,13 @@ public class Draggable : MonoBehaviour
 		}
 
 		gameObject.layer = originalLayer;
-		
+
 		if (highestCollider.distance < float.MaxValue)
 		{
 			hitPoint = highestCollider.point;
 			return true;
 		}
-		
+
 
 		return false;
 	}
@@ -160,7 +160,7 @@ public class Draggable : MonoBehaviour
 	// REFACTOR: Remove unused function
 	public float GetHalfHeight()
 	{
-		return _collider.bounds.extents.y;	
+		return _collider.bounds.extents.y;
 	}
 
 	public Vector3 GetExtents()
