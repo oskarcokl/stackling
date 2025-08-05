@@ -1,2 +1,0 @@
-﻿BUG:
-1. Ta druga kocka se for some reason noče zaznat colliderjev pod sabo.
