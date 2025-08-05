@@ -1,0 +1,10 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/PauseMenuStyles.uss?fileID=7433441132597879392&amp;guid=5c2dae6803398cb4cb099b056dbb2ae8&amp;type=3#PauseMenuStyles" />
+    <ui:VisualElement style="align-self: auto; align-items: center; height: 100%; width: 100%; justify-content: center;">
+        <ui:Button text="Resume" name="Resume" class="pause-menu_item pause-menu_item_button" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
+        <ui:SliderInt label="Music volume" value="42" high-value="100" name="MusicVolume" page-size="1" fill="true" direction="Horizontal" class="pause-menu_item pause-menu_item_top-margin pause-menu_item_scroller" />
+        <ui:SliderInt label="FX Volume" value="42" high-value="100" name="FXVolume" page-size="1" fill="true" class="pause-menu_item pause-menu_item_top-margin pause-menu_item_scroller" />
+        <ui:Button text="Reset" name="Reset" class="pause-menu_item pause-menu_item_top-margin pause-menu_item_button" />
+        <ui:Button text="Quit" name="Quit" class="pause-menu_item pause-menu_item_top-margin pause-menu_item_button" />
+    </ui:VisualElement>
+</ui:UXML>

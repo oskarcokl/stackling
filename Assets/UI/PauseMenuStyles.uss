@@ -1,0 +1,14 @@
+.pause-menu_item_top-margin {
+    margin-top: 10px;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+}
+
+.pause-menu_item_button {
+    width: 250px;
+}
+
+.pause-menu_item_scroller {
+    width: 250px;
+}
