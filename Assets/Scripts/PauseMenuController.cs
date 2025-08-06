@@ -24,10 +24,12 @@ public class PauseMenuController : MonoBehaviour
         if (m_IsVisible)
         {
             Hide();
+            GameController.Instance.Resume();
         }
         else
         {
             Show();
+            GameController.Instance.Pause();
         }
     }
 

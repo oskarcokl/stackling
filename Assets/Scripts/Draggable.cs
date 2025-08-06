@@ -32,15 +32,20 @@ public class Draggable : MonoBehaviour
 
 	private void Update()
 	{
+		// if (GameController.Instance.IsPaused())
+		// {
+		// 	return; // Do not update if the game is paused
+		// }
+
 		if (_state == State.Dragging || _state == State.Dropping)
-		{
-			//Debug.Log("_targetPosition " + _targetPosition);
-			transform.position = Vector3.SmoothDamp(transform.position, _targetPosition, ref _moveVelocity, 0.1f);
-			if (_state == State.Dropping && transform.position == _targetPosition)
 			{
-				_state = State.Idle;
+				//Debug.Log("_targetPosition " + _targetPosition);
+				transform.position = Vector3.SmoothDamp(transform.position, _targetPosition, ref _moveVelocity, 0.1f);
+				if (_state == State.Dropping && transform.position == _targetPosition)
+				{
+					_state = State.Idle;
+				}
 			}
-		}
 
 		if (rotating)
 		{
@@ -102,7 +107,7 @@ public class Draggable : MonoBehaviour
 	{
 		if (!rotating)
 		{
-			rotating = true;			
+			rotating = true;
 			_targetRotation = transform.rotation * Quaternion.AngleAxis(-90, Vector3.up);
 		}
 	}
@@ -165,7 +170,7 @@ public class Draggable : MonoBehaviour
 
 	public Vector3 GetExtents()
 	{
-		return _collider.bounds.extents;	
+		return _collider.bounds.extents;
 	}
 
 	public float GetHeight()

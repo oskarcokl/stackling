@@ -29,8 +29,7 @@ public class GameInput : MonoBehaviour
 
         _input = new InputSystem_Actions();
 
-        _input.PlayerInput.Enable();
-
+        EnablePlayerInput();
         _input.PlayerInput.PickUp.started += PickUpOnStarted;
         _input.PlayerInput.PickUp.canceled += PickUpOnCanceled;
         _input.PlayerInput.CursorMove.performed += CursorMoveOnPerformed;
@@ -77,6 +76,16 @@ public class GameInput : MonoBehaviour
     {
         //Debug.Log("Pick up action");
         OnPickupActionStarted?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void DisablePlayerInput()
+    {
+        _input.PlayerInput.Disable();
+    }
+
+    public void EnablePlayerInput()
+    {
+        _input.PlayerInput.Enable();
     }
 
     public Vector3 GetCursorPosition()
