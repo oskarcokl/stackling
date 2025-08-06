@@ -27,12 +27,14 @@ public class GameController : MonoBehaviour
     {
         m_GameState = GameState.Paused;
         GameInput.Instance.DisablePlayerInput();
+        GameInput.Instance.DisableCameraInput();
     }
 
     public void Resume()
     {
         m_GameState = GameState.Running;
         GameInput.Instance.EnablePlayerInput();
+        GameInput.Instance.EnableCameraInput();
     }
 
     public bool IsPaused()

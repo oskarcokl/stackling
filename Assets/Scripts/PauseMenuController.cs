@@ -20,7 +20,6 @@ public class PauseMenuController : MonoBehaviour
 
     private void GameInputOnPauseUnpauseAction(object sender, EventArgs e)
     {
-        Debug.Log("PauseMenuController OnPauseUnpauseAction");
         if (m_IsVisible)
         {
             Hide();

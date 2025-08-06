@@ -11,6 +11,18 @@ public class GameInput : MonoBehaviour
     {
         public Vector2 cursorPosition;
     }
+    public event EventHandler<OnCameraLookActionPerformedEventArgs> OnCameraLookActionPerformed;
+    public class OnCameraLookActionPerformedEventArgs : EventArgs
+    {
+        public Vector2 lookVector;
+    }
+    public event EventHandler OnCameraLookActionCanceled;
+    public event EventHandler<OnCameraZoomActionPerformedEventArgs> OnCameraZoomActionPerformed;
+    public class OnCameraZoomActionPerformedEventArgs : EventArgs
+    {
+        public float zoomAmount;
+    }
+    public event EventHandler OnCameraZoomActionCanceled;
 
     public event EventHandler OnPickupActionStarted;
     public event EventHandler OnPickupActionEnded;
@@ -38,11 +50,34 @@ public class GameInput : MonoBehaviour
 
         _input.UI.Enable();
         _input.UI.PauseUnpause.performed += PauseUnpauseOnPerformed;
+
+
+        _input.Enable();
+        _input.Camera.Look.performed += CameraLookOnPerformed;
+        _input.Camera.Look.canceled += CameraLookOnCanceled;
+        _input.Camera.Zoom.performed += CameraZoomOnPerformed;
+        _input.Camera.Zoom.canceled += CameraZoomOnCanceled;
+    }
+
+    private void CameraLookOnPerformed(InputAction.CallbackContext obj)
+    {
+        OnCameraLookActionPerformed?.Invoke(this, new OnCameraLookActionPerformedEventArgs { lookVector = obj.ReadValue<Vector2>() });
+    }
+    private void CameraLookOnCanceled(InputAction.CallbackContext obj)
+    {
+        OnCameraLookActionCanceled?.Invoke(this, EventArgs.Empty);
+    }
+    private void CameraZoomOnPerformed(InputAction.CallbackContext obj)
+    {
+        OnCameraZoomActionPerformed?.Invoke(this, new OnCameraZoomActionPerformedEventArgs { zoomAmount = obj.ReadValue<Vector2>().y });
+    }
+    private void CameraZoomOnCanceled(InputAction.CallbackContext obj)
+    {
+        OnCameraZoomActionCanceled?.Invoke(this, EventArgs.Empty);
     }
 
     private void PauseUnpauseOnPerformed(InputAction.CallbackContext obj)
     {
-        Debug.Log("OnPause action performed");
         OnPauseUnpauseAction?.Invoke(this, EventArgs.Empty);
     }
 
@@ -53,7 +88,7 @@ public class GameInput : MonoBehaviour
 
     private void RotateLeftOnPerformed(InputAction.CallbackContext obj)
     {
-       OnRotateLeftAction?.Invoke(this, EventArgs.Empty);
+        OnRotateLeftAction?.Invoke(this, EventArgs.Empty);
     }
 
 
@@ -67,10 +102,10 @@ public class GameInput : MonoBehaviour
         OnCursorMove?.Invoke(this, EventArgs.Empty);
     }
 
-	private void PickUpOnCanceled(InputAction.CallbackContext obj)
-	{
+    private void PickUpOnCanceled(InputAction.CallbackContext obj)
+    {
         OnPickupActionEnded?.Invoke(this, EventArgs.Empty);
-	}
+    }
 
     private void PickUpOnStarted(InputAction.CallbackContext obj)
     {
@@ -87,6 +122,21 @@ public class GameInput : MonoBehaviour
     {
         _input.PlayerInput.Enable();
     }
+
+    public void DisableCameraInput()
+    {
+        _input.Camera.Disable();
+    }
+
+    public void EnableCameraInput()
+    {
+        _input.Camera.Enable();
+    }
+
+    public bool IsCameraLookButtonPressed()
+    {
+        return _input.Camera.LookButton.IsPressed();
+   }
 
     public Vector3 GetCursorPosition()
     {
